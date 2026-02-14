@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-create-a-fresh-internet-computer-deployment-that-produces-a-new-working-public-url-in-the-format-https-canister-id-icp0-io-not-https-campus-point-services-icp0-io-and-record-the-newly-generated-working-url-as-the-build-output-i-e-it-must-be-discoverable-in-repo-as-the-latest-deployment-url",
-      "featureTitle": "Create a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` (not `https://campus-point-services.icp0.io/`), and record the newly generated working URL as the build output (i.e., it must be discoverable in-repo as the latest deployment URL).",
+      "featureId": "feature-perform-a-fresh-internet-computer-deployment-that-produces-a-new-working-public-url-in-the-format-https-canister-id-icp0-io-and-record-the-newly-generated-url-in-repo-as-the-latest-deployment-output",
+      "featureTitle": "Perform a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` and record the newly generated URL in-repo as the latest deployment output.",
       "files": [
         "frontend/DEPLOYMENT_OUTPUT.md"
       ],
@@ -21,8 +21,8 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-frontend-deployed-public-url-md-to-replace-new-url-to-be-generated-with-the-newly-generated-working-https-canister-id-icp0-io-url-and-reflect-that-it-is-the-current-live-deployment-while-keeping-the-previous-broken-url-listed-as-deprecated",
-      "featureTitle": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to replace `[NEW URL TO BE GENERATED]` with the newly generated working `https://[canister-id].icp0.io/` URL and reflect that it is the current live deployment (while keeping the previous broken URL listed as deprecated).",
+      "featureId": "feature-update-frontend-deployed-public-url-md-to-set-the-current-deployment-public-url-to-the-newly-generated-working-https-canister-id-icp0-io-url-and-keep-https-campus-point-services-icp0-io-listed-as-the-previous-deprecated-url",
+      "featureTitle": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to set the **Current Deployment** public URL to the newly generated working `https://[canister-id].icp0.io/` URL and keep `https://campus-point-services.icp0.io/` listed as the previous/deprecated URL.",
       "files": [
         "frontend/DEPLOYED_PUBLIC_URL.md"
       ],
@@ -59,11 +59,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-ensure-open-graph-og-url-metadata-is-set-to-the-actual-deployed-origin-at-runtime-by-invoking-updateruntimepublicurl-on-app-startup-without-modifying-immutable-files-and-remove-production-debug-logging-from-frontend-src-utils-runtimepublicurl-ts",
-      "featureTitle": "Ensure Open Graph `og:url` metadata is set to the actual deployed origin at runtime by invoking `updateRuntimePublicUrl()` on app startup (without modifying immutable files), and remove production debug logging from `frontend/src/utils/runtimePublicUrl.ts`.",
+      "featureId": "feature-add-documentation-for-re-attaching-the-custom-icp0-domain-campus-point-services-icp0-io-so-it-points-to-the-newly-deployed-canister-i-e-update-the-domain-mapping-alias-to-the-new-canister-id-including-a-short-verification-checklist-and-what-to-do-if-the-domain-still-resolves-to-a-deleted-non-existing-canister",
+      "featureTitle": "Add documentation for re-attaching the custom ICP0 domain `campus-point-services.icp0.io` so it points to the newly deployed canister (i.e., update the domain mapping/alias to the new canister ID), including a short verification checklist and what to do if the domain still resolves to a deleted/non-existing canister.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/utils/runtimePublicUrl.ts"
+        "frontend/DEPLOYED_PUBLIC_URL.md"
       ],
       "components": [
         "core-infrastructure@1.0.2",

@@ -1,73 +1,68 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Document latest icp0 deployment URL and ensure runtime og:url matches deployed origin",
+  "title": "Restore working ICP0 public URL documentation after fresh deployment",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Record the newly generated working https://[canister-id].icp0.io/ deployment URL in-repo as the latest deployment output.",
+      "summary": "Record the newly deployed working `https://[canister-id].icp0.io/` URL and deployment date in-repo as the latest deployment output.",
       "acceptanceCriteria": [
-        "A new `https://[canister-id].icp0.io/` URL is produced for the app and is reachable in an incognito/private window.",
-        "Loading the new URL shows the Campus Point Services homepage (no 'Canister ID Not Resolved' / gateway error).",
-        "The latest deployment URL is written into `frontend/DEPLOYMENT_OUTPUT.md` (replacing the placeholder `[TO BE FILLED BY DEPLOYMENT SYSTEM]`)."
+        "A new deployment is produced with a working public URL in the format `https://[canister-id].icp0.io/`.",
+        "`frontend/DEPLOYMENT_OUTPUT.md` contains the actual new public URL (no `[canister-id]` placeholder) and the deployment date is updated.",
+        "Opening the recorded URL in an incognito/private window loads the app (not 'Error 400 - Canister ID Not Resolved')."
       ],
       "file_operations": [
         {
           "path": "frontend/DEPLOYMENT_OUTPUT.md",
           "operation": "modify",
-          "description": "Replace the `New Public URL` placeholder `[TO BE FILLED BY DEPLOYMENT SYSTEM]` with the newly generated working `https://[canister-id].icp0.io/` URL and ensure the 'Latest Deployment' block reflects this as the most recent deployment URL."
+          "description": "Replace the placeholder `https://[canister-id].icp0.io/` with the actual newly generated working public URL from the fresh deployment, and update the 'Date' field to the deployment date. Ensure the 'Next Steps' section’s sitemap reference also matches the new URL."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Update the deployed public URL documentation to reflect the new live icp0 canister URL while keeping the previous vanity URL marked deprecated.",
+      "summary": "Update the deployed public URL doc to set the new ICP0 canister URL as current and keep the old custom domain listed as deprecated/previous.",
       "acceptanceCriteria": [
-        "`frontend/DEPLOYED_PUBLIC_URL.md` contains the new working URL under 'Public URL' and no longer contains the placeholder string.",
-        "The deprecated URL `https://campus-point-services.icp0.io/` remains documented as 'Previous URL (deprecated)'.",
-        "Any sitemap example in `frontend/DEPLOYED_PUBLIC_URL.md` uses the new URL (e.g., `[NEW_URL]/sitemap.xml`)."
+        "`frontend/DEPLOYED_PUBLIC_URL.md` contains the exact new `https://[canister-id].icp0.io/` URL (no placeholder) under 'Current Deployment'.",
+        "`https://campus-point-services.icp0.io/` remains present and clearly labeled as deprecated/previous.",
+        "The sitemap URL shown in the doc matches the new deployment URL (`https://[canister-id].icp0.io/sitemap.xml`)."
       ],
       "file_operations": [
         {
           "path": "frontend/DEPLOYED_PUBLIC_URL.md",
           "operation": "modify",
-          "description": "Replace `[NEW URL TO BE GENERATED]` with the newly generated working `https://[canister-id].icp0.io/` URL; update status text to indicate it is live/current; keep `https://campus-point-services.icp0.io/` listed under 'Previous URL (deprecated)'; update the sitemap example line to use the same new URL (e.g., `https://[canister-id].icp0.io/sitemap.xml`)."
+          "description": "Set 'Public URL' under 'Current Deployment' to the exact newly generated working `https://<new-canister-id>.icp0.io/` URL (no placeholder). Keep `https://campus-point-services.icp0.io/` present and clearly labeled as previous/deprecated. Update the sitemap URL line to `https://<new-canister-id>.icp0.io/sitemap.xml`."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Update the Google indexing guide to reference the newly deployed icp0 canister URL and its sitemap URL.",
+      "summary": "Update Google indexing documentation to reference the newly deployed working URL and correct sitemap URL.",
       "acceptanceCriteria": [
-        "`frontend/GOOGLE_INDEXING_GUIDE.md` includes the new working URL under 'Your Live Website URL'.",
-        "The guide references the sitemap at the new deployment (e.g., `https://[canister-id].icp0.io/sitemap.xml`)."
+        "`frontend/GOOGLE_INDEXING_GUIDE.md` includes the exact new `https://[canister-id].icp0.io/` URL (no placeholder) in the 'Your Live Website URL' section.",
+        "The guide’s sitemap URL references the new deployment (`https://[canister-id].icp0.io/sitemap.xml`)."
       ],
       "file_operations": [
         {
           "path": "frontend/GOOGLE_INDEXING_GUIDE.md",
           "operation": "modify",
-          "description": "Populate the 'Your Live Website URL' section with the newly generated working `https://[canister-id].icp0.io/` URL and add/adjust wording so the referenced sitemap URL points to `https://[canister-id].icp0.io/sitemap.xml` for that same deployment."
+          "description": "Update the 'Your Live Website URL' section to include the exact newly generated working `https://<new-canister-id>.icp0.io/` (no placeholder), remove/adjust any 'replace [canister-id]' placeholder guidance accordingly, and update the listed sitemap URL to `https://<new-canister-id>.icp0.io/sitemap.xml`. Also update the 'Last Updated' date to match the new deployment date."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Set og:url to the deployed origin at runtime on app startup via updateRuntimePublicUrl(), and remove production debug logging from runtimePublicUrl.ts without modifying frontend/src/main.tsx.",
+      "summary": "Document how to re-attach the custom ICP0 domain alias `campus-point-services.icp0.io` to the newly deployed canister, including verification and troubleshooting.",
       "acceptanceCriteria": [
-        "On first app render, the document `meta[property=\"og:url\"]` content is updated to match `window.location.origin + '/'` (e.g., `https://[canister-id].icp0.io/`).",
-        "`frontend/src/utils/runtimePublicUrl.ts` no longer logs the runtime URL via `console.log`.",
-        "No changes are made to immutable path `frontend/src/main.tsx`."
+        "Repository documentation clearly states that `campus-point-services.icp0.io` must be re-mapped to the new canister ID after redeploying.",
+        "Documentation includes steps to verify the domain resolves correctly (e.g., open the domain URL, confirm it is not an error page, compare to the new `https://[canister-id].icp0.io/` URL).",
+        "Documentation warns that the old domain may currently point to a deleted/non-existing canister and must be updated to the new canister ID to work again."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/runtimePublicUrl.ts",
+          "path": "frontend/DEPLOYED_PUBLIC_URL.md",
           "operation": "modify",
-          "description": "Remove the production debug `console.log` and keep the function behavior focused on computing `${window.location.protocol}//${window.location.host}/` (equivalent to `window.location.origin + '/'`) and updating `meta[property=\"og:url\"]` accordingly."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Invoke `updateRuntimePublicUrl()` on app startup (e.g., via a top-level React effect on initial mount) so `og:url` is set to the actual deployed origin at runtime, without changing the immutable `frontend/src/main.tsx`."
+          "description": "Add a new section documenting that the custom ICP0 domain `https://campus-point-services.icp0.io/` is an alias that must be re-mapped to the new canister ID after each redeploy. Include a short verification checklist (compare the alias and the new `https://<new-canister-id>.icp0.io/` URL; check incognito; confirm not an error page) and troubleshooting notes for when the alias still resolves to a deleted/non-existing canister."
         }
       ]
     }

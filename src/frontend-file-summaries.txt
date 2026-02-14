@@ -18,10 +18,10 @@
   "frontend/src/hooks/useAdmin.ts": "React Query hooks for checking admin status (isCallerAdmin) and fetching user role from the backend with proper authentication and error handling.",
   "frontend/public/robots.txt": "Static robots.txt file allowing all crawlers with a relative sitemap reference and example comment showing the deployed *.icp0.io URL format.",
   "frontend/public/sitemap.xml": "Static XML sitemap with relative URL paths that work with any deployed host, listing the homepage for search engine indexing.",
-  "frontend/GOOGLE_INDEXING_GUIDE.md": "Comprehensive step-by-step guide for Google Search Console verification and sitemap submission using the newly deployed https://[canister-id].icp0.io/ URL with detailed troubleshooting and support resources.",
+  "frontend/GOOGLE_INDEXING_GUIDE.md": "Google Search Console setup guide with instructions for finding the actual canister ID, replacing placeholders, and considerations for custom domain usage with search engine indexing.",
   "frontend/src/constants/contact.ts": "Shared contact information constants (phone and email) with display and link values to ensure consistency across the application.",
   "frontend/src/main.tsx": "Application entry point with QueryClient and InternetIdentity providers, now calls updateRuntimePublicUrl() on startup to populate metadata with the actual deployed URL.",
-  "frontend/DEPLOYED_PUBLIC_URL.md": "Public URL documentation containing the new working https://[canister-id].icp0.io/ deployment URL marked as live, with the deprecated campus-point-services.icp0.io URL listed as previous, and updated sitemap reference.",
+  "frontend/DEPLOYED_PUBLIC_URL.md": "Public URL documentation template with detailed instructions for re-mapping the custom domain campus-point-services.icp0.io to the new canister ID after deployment, including verification and troubleshooting steps.",
   "frontend/src/utils/runtimePublicUrl.ts": "Runtime utility that derives the app's public URL from window.location.origin and updates the og:url meta tag to reflect the current deployed *.icp0.io origin; production debug logging removed.",
-  "frontend/DEPLOYMENT_OUTPUT.md": "Deployment output documentation recording the newly generated working https://[canister-id].icp0.io/ URL with verification checklist and next steps for post-deployment tasks."
+  "frontend/DEPLOYMENT_OUTPUT.md": "Deployment output documentation template with instructions for finding and replacing the canister ID placeholder, verification checklist, and post-deployment steps including custom domain re-mapping."
 }

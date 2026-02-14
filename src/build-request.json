@@ -1,42 +1,44 @@
 {
   "kind": "build_request",
-  "title": "Generate a fresh working ICP0 public URL and update deployment/indexing docs",
+  "title": "Retry deployment and restore working public URL for campus-point-services.icp0.io",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Create a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` (not `https://campus-point-services.icp0.io/`), and record the newly generated working URL as the build output (i.e., it must be discoverable in-repo as the latest deployment URL).",
+      "text": "Perform a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` and record the newly generated URL in-repo as the latest deployment output.",
       "target": "unknown",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-5",
+          "recent-6"
         ],
         "quotes": [
-          "Generate a fresh working ICPO public link"
+          "campus-point-services.icp0.io",
+          "Ok try it again"
         ]
       },
       "acceptanceCriteria": [
-        "A new `https://[canister-id].icp0.io/` URL is produced for the app and is reachable in an incognito/private window.",
-        "Loading the new URL shows the Campus Point Services homepage (no 'Canister ID Not Resolved' / gateway error).",
-        "The latest deployment URL is written into `frontend/DEPLOYMENT_OUTPUT.md` (replacing the placeholder `[TO BE FILLED BY DEPLOYMENT SYSTEM]`)."
+        "A new deployment is produced with a working public URL in the format `https://[canister-id].icp0.io/`.",
+        "`frontend/DEPLOYMENT_OUTPUT.md` contains the actual new public URL (no `[canister-id]` placeholder) and the deployment date is updated.",
+        "Opening the recorded URL in an incognito/private window loads the app (not 'Error 400 - Canister ID Not Resolved')."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to replace `[NEW URL TO BE GENERATED]` with the newly generated working `https://[canister-id].icp0.io/` URL and reflect that it is the current live deployment (while keeping the previous broken URL listed as deprecated).",
+      "text": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to set the **Current Deployment** public URL to the newly generated working `https://[canister-id].icp0.io/` URL and keep `https://campus-point-services.icp0.io/` listed as the previous/deprecated URL.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-5"
         ],
         "quotes": [
-          "Generate a fresh working ICPO public link"
+          "campus-point-services.icp0.io"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/DEPLOYED_PUBLIC_URL.md` contains the new working URL under 'Public URL' and no longer contains the placeholder string.",
-        "The deprecated URL `https://campus-point-services.icp0.io/` remains documented as 'Previous URL (deprecated)'.",
-        "Any sitemap example in `frontend/DEPLOYED_PUBLIC_URL.md` uses the new URL (e.g., `[NEW_URL]/sitemap.xml`)."
+        "`frontend/DEPLOYED_PUBLIC_URL.md` contains the exact new `https://[canister-id].icp0.io/` URL (no placeholder) under 'Current Deployment'.",
+        "`https://campus-point-services.icp0.io/` remains present and clearly labeled as deprecated/previous.",
+        "The sitemap URL shown in the doc matches the new deployment URL (`https://[canister-id].icp0.io/sitemap.xml`)."
       ]
     },
     {
@@ -45,44 +47,44 @@
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-6"
         ],
         "quotes": [
-          "Generate a fresh working ICPO public link"
+          "Ok try it again"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/GOOGLE_INDEXING_GUIDE.md` includes the new working URL under 'Your Live Website URL'.",
-        "The guide references the sitemap at the new deployment (e.g., `https://[canister-id].icp0.io/sitemap.xml`)."
+        "`frontend/GOOGLE_INDEXING_GUIDE.md` includes the exact new `https://[canister-id].icp0.io/` URL (no placeholder) in the 'Your Live Website URL' section.",
+        "The guide’s sitemap URL references the new deployment (`https://[canister-id].icp0.io/sitemap.xml`)."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Ensure Open Graph `og:url` metadata is set to the actual deployed origin at runtime by invoking `updateRuntimePublicUrl()` on app startup (without modifying immutable files), and remove production debug logging from `frontend/src/utils/runtimePublicUrl.ts`.",
+      "text": "Add documentation for re-attaching the custom ICP0 domain `campus-point-services.icp0.io` so it points to the newly deployed canister (i.e., update the domain mapping/alias to the new canister ID), including a short verification checklist and what to do if the domain still resolves to a deleted/non-existing canister.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "recent-5"
         ],
         "quotes": [
-          "Generate a fresh working ICPO public link"
+          "campus-point-services.icp0.io"
         ]
       },
       "acceptanceCriteria": [
-        "On first app render, the document `meta[property=\"og:url\"]` content is updated to match `window.location.origin + '/'` (e.g., `https://[canister-id].icp0.io/`).",
-        "`frontend/src/utils/runtimePublicUrl.ts` no longer logs the runtime URL via `console.log`.",
-        "No changes are made to immutable path `frontend/src/main.tsx`."
+        "Repository documentation clearly states that `campus-point-services.icp0.io` must be re-mapped to the new canister ID after redeploying.",
+        "Documentation includes steps to verify the domain resolves correctly (e.g., open the domain URL, confirm it is not an error page, compare to the new `https://[canister-id].icp0.io/` URL).",
+        "Documentation warns that the old domain may currently point to a deleted/non-existing canister and must be updated to the new canister ID to work again."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under `frontend/src/components/ui` (read-only UI library sources must be composed, not edited).",
-    "Do not edit immutable paths: `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, `frontend/src/components/ui`.",
-    "Backend must remain a single Motoko actor in `backend/main.mo`; only add `backend/migration.mo` if an upgrade requires state migration."
+    "Do not modify any files under `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, or anything in `frontend/src/components/ui`.",
+    "Backend must remain single-actor with all Motoko logic in `backend/main.mo`; only create `backend/migration.mo` if an upgrade requires state migration.",
+    "Use English for all user-facing documentation and UI text."
   ],
   "nonGoals": [
-    "Fix or restore the broken vanity domain `https://campus-point-services.icp0.io/` mapping itself (the goal is to produce and document a new working `*.icp0.io` canister URL).",
-    "Add new product features unrelated to generating a fresh working public URL and updating the related documentation/metadata."
+    "Implementing external DNS/provider configuration outside of repository changes (e.g., purchasing a domain or managing third-party DNS accounts).",
+    "Adding new product features unrelated to deployment/linking (e.g., new pages, new enquiry workflow changes)."
   ],
   "imageRequirements": {
     "required": [],

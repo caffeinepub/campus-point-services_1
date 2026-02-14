@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-14T13:38:33.334Z",
+  "generatedAt": "2026-02-14T13:49:10.266Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -12,7 +12,7 @@
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Create a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` (not `https://campus-point-services.icp0.io/`), and record the newly generated working URL as the build output (i.e., it must be discoverable in-repo as the latest deployment URL).",
+        "summary": "Perform a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` and record the newly generated URL in-repo as the latest deployment output.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/DEPLOYMENT_OUTPUT.md"
@@ -23,7 +23,7 @@
       },
       {
         "id": "REQ-2",
-        "summary": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to replace `[NEW URL TO BE GENERATED]` with the newly generated working `https://[canister-id].icp0.io/` URL and reflect that it is the current live deployment (while keeping the previous broken URL listed as deprecated).",
+        "summary": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to set the **Current Deployment** public URL to the newly generated working `https://[canister-id].icp0.io/` URL and keep `https://campus-point-services.icp0.io/` listed as the previous/deprecated URL.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/DEPLOYED_PUBLIC_URL.md"
@@ -45,15 +45,13 @@
       },
       {
         "id": "REQ-4",
-        "summary": "Ensure Open Graph `og:url` metadata is set to the actual deployed origin at runtime by invoking `updateRuntimePublicUrl()` on app startup (without modifying immutable files), and remove production debug logging from `frontend/src/utils/runtimePublicUrl.ts`.",
+        "summary": "Add documentation for re-attaching the custom ICP0 domain `campus-point-services.icp0.io` so it points to the newly deployed canister (i.e., update the domain mapping/alias to the new canister ID), including a short verification checklist and what to do if the domain still resolves to a deleted/non-existing canister.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/runtimePublicUrl.ts",
-          "frontend/src/App.tsx"
+          "frontend/DEPLOYED_PUBLIC_URL.md"
         ],
         "matchedFiles": [
-          "frontend/src/utils/runtimePublicUrl.ts",
-          "frontend/src/App.tsx"
+          "frontend/DEPLOYED_PUBLIC_URL.md"
         ]
       }
     ]
@@ -66,8 +64,6 @@
     "frontend/DEPLOYED_PUBLIC_URL.md",
     "frontend/DEPLOYMENT_OUTPUT.md",
     "frontend/GOOGLE_INDEXING_GUIDE.md",
-    "frontend/src/App.tsx",
-    "frontend/src/utils/runtimePublicUrl.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
