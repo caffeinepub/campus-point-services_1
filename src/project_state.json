@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [
+    "Current custom ICP0 domain (campus-point-services.icp0.io) appears to be mapped to a deleted/non-existing canister; a new deploy/link or updated domain mapping is required."
+  ],
+  "known_issues": [
+    "Public link campus-point-services.icp0.io is not working (likely pointing to deleted/non-existing canister)."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-create-a-fresh-internet-computer-deployment-that-produces-a-new-working-public-url-in-the-format-https-canister-id-icp0-io-not-https-campus-point-services-icp0-io-and-record-the-newly-generated-working-url-as-the-build-output-i-e-it-must-be-discoverable-in-repo-as-the-latest-deployment-url",
+      "title": "Create a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` (not `https://campus-point-services.icp0.io/`), and record the newly generated working URL as the build output (i.e., it must be discoverable in-repo as the latest deployment URL).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-deployed-public-url-md-to-replace-new-url-to-be-generated-with-the-newly-generated-working-https-canister-id-icp0-io-url-and-reflect-that-it-is-the-current-live-deployment-while-keeping-the-previous-broken-url-listed-as-deprecated",
+      "title": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to replace `[NEW URL TO BE GENERATED]` with the newly generated working `https://[canister-id].icp0.io/` URL and reflect that it is the current live deployment (while keeping the previous broken URL listed as deprecated).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-google-indexing-guide-md-so-the-your-live-website-url-section-includes-the-newly-generated-working-https-canister-id-icp0-io-url-and-references-the-correct-sitemap-url-for-that-deployment",
+      "title": "Update `frontend/GOOGLE_INDEXING_GUIDE.md` so the 'Your Live Website URL' section includes the newly generated working `https://[canister-id].icp0.io/` URL and references the correct sitemap URL for that deployment.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-open-graph-og-url-metadata-is-set-to-the-actual-deployed-origin-at-runtime-by-invoking-updateruntimepublicurl-on-app-startup-without-modifying-immutable-files-and-remove-production-debug-logging-from-frontend-src-utils-runtimepublicurl-ts",
+      "title": "Ensure Open Graph `og:url` metadata is set to the actual deployed origin at runtime by invoking `updateRuntimePublicUrl()` on app startup (without modifying immutable files), and remove production debug logging from `frontend/src/utils/runtimePublicUrl.ts`.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Generate a fresh working ICP0 public link for the app (redeploy / create new canister URL)",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Generate a fresh working ICP0 public URL and update deployment/indexing docs",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

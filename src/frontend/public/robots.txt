@@ -1,0 +1,11 @@
+# Campus Point Services - Robots.txt
+# This file tells search engines which pages they can crawl
+
+User-agent: *
+Allow: /
+
+# Sitemap location (relative path works with any deployed host)
+Sitemap: /sitemap.xml
+
+# Example: If deployed at https://campus-point-services.icp0.io/
+# Full sitemap URL would be: https://campus-point-services.icp0.io/sitemap.xml

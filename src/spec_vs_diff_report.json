@@ -1,0 +1,79 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-14T13:38:33.332Z",
+  "summary": "REQ-4 appears implemented by invoking updateRuntimePublicUrl() on app startup (via App.tsx) and removing console logging from runtimePublicUrl.ts. REQ-1/REQ-2/REQ-3 are not satisfied because the repo docs still contain the placeholder canister-id instead of a newly generated, recorded, concrete https://[canister-id].icp0.io/ URL. The diff also includes multiple unrelated UI/content and feature changes not requested by the BuildRequest (based on the provided file summaries).",
+  "missing_requirements": [
+    {
+      "id": "REQ-1",
+      "requirement": "Create a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` and record the newly generated working URL as the build output in `frontend/DEPLOYMENT_OUTPUT.md` (replacing the placeholder).",
+      "reason": "`frontend/DEPLOYMENT_OUTPUT.md` still contains the placeholder `https://[canister-id].icp0.io/` rather than a real canister ID URL, so the latest deployment URL is not discoverable in-repo as an actual working URL.",
+      "evidence": [
+        "frontend/DEPLOYMENT_OUTPUT.md"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to replace the placeholder with the newly generated working `https://[canister-id].icp0.io/` URL (and keep the previous broken vanity URL documented as deprecated), including updating sitemap examples.",
+      "reason": "`frontend/DEPLOYED_PUBLIC_URL.md` still shows the placeholder `https://[canister-id].icp0.io/` and thus does not contain the newly generated concrete working URL; sitemap example also remains placeholder-based.",
+      "evidence": [
+        "frontend/DEPLOYED_PUBLIC_URL.md"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "requirement": "Update `frontend/GOOGLE_INDEXING_GUIDE.md` so the 'Your Live Website URL' section includes the newly generated working `https://[canister-id].icp0.io/` URL and references the correct sitemap URL for that deployment.",
+      "reason": "`frontend/GOOGLE_INDEXING_GUIDE.md` still uses the placeholder `https://[canister-id].icp0.io/` and `https://[canister-id].icp0.io/sitemap.xml` rather than a concrete new canister deployment URL.",
+      "evidence": [
+        "frontend/GOOGLE_INDEXING_GUIDE.md"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Major UI/content redesign and copy updates across many sections (hero/about/services/coverage/process/testimonials/FAQ/contact) unrelated to generating a fresh ICP0 URL and updating deployment/indexing docs.",
+      "reason": "The BuildRequest explicitly limits scope to generating a fresh working public URL, updating docs/metadata, and runtime og:url handling; it lists adding unrelated product features as a non-goal.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Changes to header/footer behavior/content (e.g., navigation adjustments, phone number removal, attribution/UTM tracking) not requested.",
+      "reason": "Not part of REQ-1..REQ-4 and considered unrelated product/UI changes.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Introduction/expansion of admin-only enquiries management, role-based access control, and multiple React Query hooks (useQueries/useAdmin) beyond the requested og:url/runtime URL change.",
+      "reason": "These are new/expanded application features not required for generating a new ICP0 URL or updating deployment/indexing documentation and metadata.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Global styling/theme changes (index.css OKLCH palette changes, Tailwind config font/theme extensions) not requested.",
+      "reason": "Styling changes are outside the stated goal and non-goals; the request did not ask for a redesign or theme update.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "SEO/HTML head modifications beyond og:url runtime behavior (e.g., adding/altering verification/meta tags) not explicitly requested in REQ-1..REQ-4.",
+      "reason": "REQ-4 only targets og:url runtime update and removal of debug logging; broader SEO tag changes were not requested.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
+  "confidence": 0.7,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/DEPLOYED_PUBLIC_URL.md",
+    "frontend/DEPLOYMENT_OUTPUT.md",
+    "frontend/GOOGLE_INDEXING_GUIDE.md",
+    "frontend/src/App.tsx",
+    "frontend/src/utils/runtimePublicUrl.ts",
+    "project_state.json"
+  ]
+}

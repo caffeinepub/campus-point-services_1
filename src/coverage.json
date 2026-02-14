@@ -1,0 +1,76 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-14T13:38:33.334Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 4,
+    "implemented": 4,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Create a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` (not `https://campus-point-services.icp0.io/`), and record the newly generated working URL as the build output (i.e., it must be discoverable in-repo as the latest deployment URL).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/DEPLOYMENT_OUTPUT.md"
+        ],
+        "matchedFiles": [
+          "frontend/DEPLOYMENT_OUTPUT.md"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to replace `[NEW URL TO BE GENERATED]` with the newly generated working `https://[canister-id].icp0.io/` URL and reflect that it is the current live deployment (while keeping the previous broken URL listed as deprecated).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/DEPLOYED_PUBLIC_URL.md"
+        ],
+        "matchedFiles": [
+          "frontend/DEPLOYED_PUBLIC_URL.md"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Update `frontend/GOOGLE_INDEXING_GUIDE.md` so the 'Your Live Website URL' section includes the newly generated working `https://[canister-id].icp0.io/` URL and references the correct sitemap URL for that deployment.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/GOOGLE_INDEXING_GUIDE.md"
+        ],
+        "matchedFiles": [
+          "frontend/GOOGLE_INDEXING_GUIDE.md"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Ensure Open Graph `og:url` metadata is set to the actual deployed origin at runtime by invoking `updateRuntimePublicUrl()` on app startup (without modifying immutable files), and remove production debug logging from `frontend/src/utils/runtimePublicUrl.ts`.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/runtimePublicUrl.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/runtimePublicUrl.ts",
+          "frontend/src/App.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/DEPLOYED_PUBLIC_URL.md",
+    "frontend/DEPLOYMENT_OUTPUT.md",
+    "frontend/GOOGLE_INDEXING_GUIDE.md",
+    "frontend/src/App.tsx",
+    "frontend/src/utils/runtimePublicUrl.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

@@ -1,2 +1,3 @@
-# campus-point-services_1
-Exported from Caffeine project: Generate a fresh working ICP0 public URL and update deployment/indexing docs
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`
