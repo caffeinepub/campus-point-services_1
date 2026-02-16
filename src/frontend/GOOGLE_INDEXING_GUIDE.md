@@ -21,3 +21,4 @@ Complete step-by-step instructions to verify your Campus Point Services website 
 ## How to Find Your Canister ID
 
 After running `dfx deploy`, look for output similar to:
+

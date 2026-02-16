@@ -17,20 +17,20 @@ export interface Enquiry {
   'message' : string,
 }
 export interface EnquiryWithId { 'id' : string, 'enquiry' : Enquiry }
-export interface UserProfile { 'name' : string }
+export interface UserProfile { 'name' : string, 'email' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'createEnquiry' : ActorMethod<[string, string, string, string], undefined>,
+  'createEnquiry' : ActorMethod<[string, string, string], bigint>,
   'getAllEnquiriesWithIds' : ActorMethod<[], Array<EnquiryWithId>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
-  'markAnswered' : ActorMethod<[string], undefined>,
+  'markAnswered' : ActorMethod<[bigint], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

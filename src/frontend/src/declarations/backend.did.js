@@ -23,12 +23,15 @@ export const EnquiryWithId = IDL.Record({
   'id' : IDL.Text,
   'enquiry' : Enquiry,
 });
-export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const UserProfile = IDL.Record({
+  'name' : IDL.Text,
+  'email' : IDL.Text,
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'createEnquiry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text, IDL.Text], [], []),
+  'createEnquiry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
   'getAllEnquiriesWithIds' : IDL.Func([], [IDL.Vec(EnquiryWithId)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -38,7 +41,7 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-  'markAnswered' : IDL.Func([IDL.Text], [], []),
+  'markAnswered' : IDL.Func([IDL.Nat], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
 });
 
@@ -57,16 +60,12 @@ export const idlFactory = ({ IDL }) => {
     'message' : IDL.Text,
   });
   const EnquiryWithId = IDL.Record({ 'id' : IDL.Text, 'enquiry' : Enquiry });
-  const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text, 'email' : IDL.Text });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'createEnquiry' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
-        [],
-        [],
-      ),
+    'createEnquiry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
     'getAllEnquiriesWithIds' : IDL.Func(
         [],
         [IDL.Vec(EnquiryWithId)],
@@ -80,7 +79,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
-    'markAnswered' : IDL.Func([IDL.Text], [], []),
+    'markAnswered' : IDL.Func([IDL.Nat], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   });
 };

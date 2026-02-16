@@ -101,6 +101,7 @@ export interface Enquiry {
 }
 export interface UserProfile {
     name: string;
+    email: string;
 }
 export enum UserRole {
     admin = "admin",
@@ -110,13 +111,13 @@ export enum UserRole {
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    createEnquiry(id: string, name: string, email: string, message: string): Promise<void>;
+    createEnquiry(name: string, email: string, message: string): Promise<bigint>;
     getAllEnquiriesWithIds(): Promise<Array<EnquiryWithId>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
-    markAnswered(id: string): Promise<void>;
+    markAnswered(id: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
 }
 import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
@@ -150,17 +151,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async createEnquiry(arg0: string, arg1: string, arg2: string, arg3: string): Promise<void> {
+    async createEnquiry(arg0: string, arg1: string, arg2: string): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.createEnquiry(arg0, arg1, arg2, arg3);
+                const result = await this.actor.createEnquiry(arg0, arg1, arg2);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.createEnquiry(arg0, arg1, arg2, arg3);
+            const result = await this.actor.createEnquiry(arg0, arg1, arg2);
             return result;
         }
     }
@@ -234,7 +235,7 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async markAnswered(arg0: string): Promise<void> {
+    async markAnswered(arg0: bigint): Promise<void> {
         if (this.processError) {
             try {
                 const result = await this.actor.markAnswered(arg0);

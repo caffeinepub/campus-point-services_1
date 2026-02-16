@@ -1,69 +1,67 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-14T13:49:10.266Z",
+  "generatedAt": "2026-02-16T17:50:12.662Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 4,
-    "implemented": 4,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Perform a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` and record the newly generated URL in-repo as the latest deployment output.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/DEPLOYMENT_OUTPUT.md"
-        ],
-        "matchedFiles": [
-          "frontend/DEPLOYMENT_OUTPUT.md"
-        ]
+        "summary": "Fix admin authorization so the enquiries dashboard is accessible to the user with email Advnitin1404@gmail.com by making the backend authorized-admin email comparison case-insensitive and whitespace-tolerant (trim + lowercase on both stored profile email and authorized email).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to set the **Current Deployment** public URL to the newly generated working `https://[canister-id].icp0.io/` URL and keep `https://campus-point-services.icp0.io/` listed as the previous/deprecated URL.",
+        "summary": "Update the enquiries dashboard UI to handle missing/incorrect user profile email: if the caller is authenticated but their user profile is missing or has an empty email, show a \"Complete Profile\" form (name + email) that saves via saveCallerUserProfile, then re-check authorization and load enquiries when authorized.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/DEPLOYED_PUBLIC_URL.md"
+          "frontend/src/components/sections/EnquiriesView.tsx"
         ],
         "matchedFiles": [
-          "frontend/DEPLOYED_PUBLIC_URL.md"
+          "frontend/src/components/sections/EnquiriesView.tsx"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Update `frontend/GOOGLE_INDEXING_GUIDE.md` so the 'Your Live Website URL' section includes the newly generated working `https://[canister-id].icp0.io/` URL and references the correct sitemap URL for that deployment.",
+        "summary": "Improve the \"Access Denied\" state on the enquiries dashboard to clearly indicate why access was denied by showing (a) whether isCallerAdmin is true/false and (b) the current saved profile email value (or \"not set\") so the admin can self-diagnose setup issues.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/GOOGLE_INDEXING_GUIDE.md"
+          "frontend/src/components/sections/EnquiriesView.tsx"
         ],
         "matchedFiles": [
-          "frontend/GOOGLE_INDEXING_GUIDE.md"
+          "frontend/src/components/sections/EnquiriesView.tsx"
         ]
       },
       {
         "id": "REQ-4",
-        "summary": "Add documentation for re-attaching the custom ICP0 domain `campus-point-services.icp0.io` so it points to the newly deployed canister (i.e., update the domain mapping/alias to the new canister ID), including a short verification checklist and what to do if the domain still resolves to a deleted/non-existing canister.",
+        "summary": "Add a React Query mutation hook to save the caller user profile (calling saveCallerUserProfile) and use it from the enquiries dashboard profile form.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/DEPLOYED_PUBLIC_URL.md"
+          "frontend/src/hooks/useUserProfile.ts",
+          "frontend/src/components/sections/EnquiriesView.tsx"
         ],
         "matchedFiles": [
-          "frontend/DEPLOYED_PUBLIC_URL.md"
+          "frontend/src/hooks/useUserProfile.ts",
+          "frontend/src/components/sections/EnquiriesView.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/DEPLOYED_PUBLIC_URL.md",
-    "frontend/DEPLOYMENT_OUTPUT.md",
-    "frontend/GOOGLE_INDEXING_GUIDE.md",
+    "frontend/src/components/sections/EnquiriesView.tsx",
+    "frontend/src/hooks/useUserProfile.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

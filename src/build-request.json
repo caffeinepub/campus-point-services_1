@@ -1,90 +1,89 @@
 {
   "kind": "build_request",
-  "title": "Retry deployment and restore working public URL for campus-point-services.icp0.io",
-  "priority": "normal",
+  "title": "Fix admin enquiry page access denied for Advnitin1404@gmail.com",
+  "projectName": "Campus Point Services",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Perform a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` and record the newly generated URL in-repo as the latest deployment output.",
-      "target": "unknown",
+      "text": "Fix admin authorization so the enquiries dashboard is accessible to the user with email Advnitin1404@gmail.com by making the backend authorized-admin email comparison case-insensitive and whitespace-tolerant (trim + lowercase on both stored profile email and authorized email).",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "recent-5",
-          "recent-6"
+          "msg-1"
         ],
         "quotes": [
-          "campus-point-services.icp0.io",
-          "Ok try it again"
+          "Why Advnitin1404@gmail.com this mail is not able to access the enquiry page",
+          "Showing this issue"
         ]
       },
       "acceptanceCriteria": [
-        "A new deployment is produced with a working public URL in the format `https://[canister-id].icp0.io/`.",
-        "`frontend/DEPLOYMENT_OUTPUT.md` contains the actual new public URL (no `[canister-id]` placeholder) and the deployment date is updated.",
-        "Opening the recorded URL in an incognito/private window loads the app (not 'Error 400 - Canister ID Not Resolved')."
+        "When the caller is an admin and their saved profile email is any case/whitespace variant of \"Advnitin1404@gmail.com\" (e.g., \"advnitin1404@gmail.com\", \" Advnitin1404@gmail.com \"), backend methods getAllEnquiriesWithIds and markAnswered do not trap with Unauthorized.",
+        "The backend continues to deny access to non-admin callers and to admin callers whose saved profile email does not match the authorized email after normalization."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to set the **Current Deployment** public URL to the newly generated working `https://[canister-id].icp0.io/` URL and keep `https://campus-point-services.icp0.io/` listed as the previous/deprecated URL.",
+      "text": "Update the enquiries dashboard UI to handle missing/incorrect user profile email: if the caller is authenticated but their user profile is missing or has an empty email, show a \"Complete Profile\" form (name + email) that saves via saveCallerUserProfile, then re-check authorization and load enquiries when authorized.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-5"
+          "msg-1"
         ],
         "quotes": [
-          "campus-point-services.icp0.io"
+          "Showing this issue"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/DEPLOYED_PUBLIC_URL.md` contains the exact new `https://[canister-id].icp0.io/` URL (no placeholder) under 'Current Deployment'.",
-        "`https://campus-point-services.icp0.io/` remains present and clearly labeled as deprecated/previous.",
-        "The sitemap URL shown in the doc matches the new deployment URL (`https://[canister-id].icp0.io/sitemap.xml`)."
+        "If the user is logged in and getCallerUserProfile returns null or an email that is empty/whitespace, the page shows a profile form instead of the generic \"Access Denied\" message.",
+        "Submitting the profile form persists the profile via the backend and triggers a refresh of admin/profile/enquiries queries.",
+        "After saving a profile email matching Advnitin1404@gmail.com (case-insensitive), the enquiries list loads without requiring a hard refresh."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Update `frontend/GOOGLE_INDEXING_GUIDE.md` so the 'Your Live Website URL' section includes the newly generated working `https://[canister-id].icp0.io/` URL and references the correct sitemap URL for that deployment.",
+      "text": "Improve the \"Access Denied\" state on the enquiries dashboard to clearly indicate why access was denied by showing (a) whether isCallerAdmin is true/false and (b) the current saved profile email value (or \"not set\") so the admin can self-diagnose setup issues.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-6"
+          "msg-1"
         ],
         "quotes": [
-          "Ok try it again"
+          "Showing this issue"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/GOOGLE_INDEXING_GUIDE.md` includes the exact new `https://[canister-id].icp0.io/` URL (no placeholder) in the 'Your Live Website URL' section.",
-        "The guide’s sitemap URL references the new deployment (`https://[canister-id].icp0.io/sitemap.xml`)."
+        "When access is denied, the UI displays the admin-check result (admin vs not admin) and the currently loaded profile email value (or 'not set').",
+        "All user-facing text is in English and does not expose sensitive implementation details beyond the above status."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Add documentation for re-attaching the custom ICP0 domain `campus-point-services.icp0.io` so it points to the newly deployed canister (i.e., update the domain mapping/alias to the new canister ID), including a short verification checklist and what to do if the domain still resolves to a deleted/non-existing canister.",
+      "text": "Add a React Query mutation hook to save the caller user profile (calling saveCallerUserProfile) and use it from the enquiries dashboard profile form.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "recent-5"
+          "msg-1"
         ],
         "quotes": [
-          "campus-point-services.icp0.io"
+          "Showing this issue"
         ]
       },
       "acceptanceCriteria": [
-        "Repository documentation clearly states that `campus-point-services.icp0.io` must be re-mapped to the new canister ID after redeploying.",
-        "Documentation includes steps to verify the domain resolves correctly (e.g., open the domain URL, confirm it is not an error page, compare to the new `https://[canister-id].icp0.io/` URL).",
-        "Documentation warns that the old domain may currently point to a deleted/non-existing canister and must be updated to the new canister ID to work again."
+        "A new mutation exists for saveCallerUserProfile and is used by the enquiries dashboard to persist name/email.",
+        "On success, relevant cached queries (currentUserProfile, isCallerAdmin, enquiries) are invalidated/refetched so the UI updates immediately."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, or anything in `frontend/src/components/ui`.",
-    "Backend must remain single-actor with all Motoko logic in `backend/main.mo`; only create `backend/migration.mo` if an upgrade requires state migration.",
-    "Use English for all user-facing documentation and UI text."
+    "Do not edit files under frontend/src/components/ui (read-only components must be composed, not modified).",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Keep all Motoko logic in the single backend actor (backend/main.mo)."
   ],
   "nonGoals": [
-    "Implementing external DNS/provider configuration outside of repository changes (e.g., purchasing a domain or managing third-party DNS accounts).",
-    "Adding new product features unrelated to deployment/linking (e.g., new pages, new enquiry workflow changes)."
+    "Adding any third-party authentication provider (only Internet Identity is used).",
+    "Adding real-time updates/chat/notifications.",
+    "Changing the public website content/sections unrelated to the enquiries/admin access flow."
   ],
   "imageRequirements": {
     "required": [],

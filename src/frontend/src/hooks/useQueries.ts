@@ -3,7 +3,7 @@ import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
 import type { EnquiryWithId } from '../backend';
 
-export function useGetAllEnquiries() {
+export function useGetAllEnquiries(enabled: boolean = true) {
   const { actor, isFetching } = useActor();
   const { identity } = useInternetIdentity();
 
@@ -18,7 +18,7 @@ export function useGetAllEnquiries() {
         throw error;
       }
     },
-    enabled: !!actor && !!identity && !isFetching,
+    enabled: !!actor && !!identity && !isFetching && enabled,
     retry: false,
   });
 }
@@ -39,11 +39,9 @@ export function useCreateEnquiry() {
     }) => {
       if (!actor) throw new Error('Actor not initialized');
       
-      // Generate a unique ID for the enquiry
-      const id = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-      
-      await actor.createEnquiry(id, name, email, message);
-      return { id };
+      // Backend generates and returns the ID
+      const id = await actor.createEnquiry(name, email, message);
+      return { id: id.toString() };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enquiries'] });
@@ -58,7 +56,8 @@ export function useMarkAnswered() {
   return useMutation({
     mutationFn: async (id: string) => {
       if (!actor) throw new Error('Actor not initialized');
-      await actor.markAnswered(id);
+      // Convert string ID to bigint for backend
+      await actor.markAnswered(BigInt(id));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enquiries'] });

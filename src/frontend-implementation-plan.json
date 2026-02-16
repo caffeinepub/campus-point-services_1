@@ -1,68 +1,56 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Restore working ICP0 public URL documentation after fresh deployment",
+  "title": "Enquiries dashboard: profile completion + clearer access denied + save profile mutation",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Record the newly deployed working `https://[canister-id].icp0.io/` URL and deployment date in-repo as the latest deployment output.",
-      "acceptanceCriteria": [
-        "A new deployment is produced with a working public URL in the format `https://[canister-id].icp0.io/`.",
-        "`frontend/DEPLOYMENT_OUTPUT.md` contains the actual new public URL (no `[canister-id]` placeholder) and the deployment date is updated.",
-        "Opening the recorded URL in an incognito/private window loads the app (not 'Error 400 - Canister ID Not Resolved')."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/DEPLOYMENT_OUTPUT.md",
-          "operation": "modify",
-          "description": "Replace the placeholder `https://[canister-id].icp0.io/` with the actual newly generated working public URL from the fresh deployment, and update the 'Date' field to the deployment date. Ensure the 'Next Steps' section’s sitemap reference also matches the new URL."
-        }
-      ]
-    },
-    {
       "id": "REQ-2",
-      "summary": "Update the deployed public URL doc to set the new ICP0 canister URL as current and keep the old custom domain listed as deprecated/previous.",
+      "summary": "Show a Complete Profile form on the enquiries dashboard when the authenticated caller has no profile or an empty/whitespace email, then save and refresh authorization/enquiries.",
       "acceptanceCriteria": [
-        "`frontend/DEPLOYED_PUBLIC_URL.md` contains the exact new `https://[canister-id].icp0.io/` URL (no placeholder) under 'Current Deployment'.",
-        "`https://campus-point-services.icp0.io/` remains present and clearly labeled as deprecated/previous.",
-        "The sitemap URL shown in the doc matches the new deployment URL (`https://[canister-id].icp0.io/sitemap.xml`)."
+        "If the user is logged in and getCallerUserProfile returns null or an email that is empty/whitespace, the page shows a profile form instead of the generic \"Access Denied\" message.",
+        "Submitting the profile form persists the profile via the backend and triggers a refresh of admin/profile/enquiries queries.",
+        "After saving a profile email matching Advnitin1404@gmail.com (case-insensitive), the enquiries list loads without requiring a hard refresh."
       ],
       "file_operations": [
         {
-          "path": "frontend/DEPLOYED_PUBLIC_URL.md",
+          "path": "frontend/src/components/sections/EnquiriesView.tsx",
           "operation": "modify",
-          "description": "Set 'Public URL' under 'Current Deployment' to the exact newly generated working `https://<new-canister-id>.icp0.io/` URL (no placeholder). Keep `https://campus-point-services.icp0.io/` present and clearly labeled as previous/deprecated. Update the sitemap URL line to `https://<new-canister-id>.icp0.io/sitemap.xml`."
+          "description": "Add a 'Complete Profile' UI state that appears when the caller is authenticated but userProfile is null or userProfile.email is empty/whitespace; use shadcn-ui (e.g., Card/Button/Input/Label) components to compose the form without modifying any files under frontend/src/components/ui. Wire the form submit to the saveCallerUserProfile mutation (REQ-4) and, on success, re-check admin status/profile and load enquiries automatically. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Update Google indexing documentation to reference the newly deployed working URL and correct sitemap URL.",
+      "summary": "Make the enquiries dashboard Access Denied state self-diagnostic by showing isCallerAdmin result and the saved profile email (or not set).",
       "acceptanceCriteria": [
-        "`frontend/GOOGLE_INDEXING_GUIDE.md` includes the exact new `https://[canister-id].icp0.io/` URL (no placeholder) in the 'Your Live Website URL' section.",
-        "The guide’s sitemap URL references the new deployment (`https://[canister-id].icp0.io/sitemap.xml`)."
+        "When access is denied, the UI displays the admin-check result (admin vs not admin) and the currently loaded profile email value (or 'not set').",
+        "All user-facing text is in English and does not expose sensitive implementation details beyond the above status."
       ],
       "file_operations": [
         {
-          "path": "frontend/GOOGLE_INDEXING_GUIDE.md",
+          "path": "frontend/src/components/sections/EnquiriesView.tsx",
           "operation": "modify",
-          "description": "Update the 'Your Live Website URL' section to include the exact newly generated working `https://<new-canister-id>.icp0.io/` (no placeholder), remove/adjust any 'replace [canister-id]' placeholder guidance accordingly, and update the listed sitemap URL to `https://<new-canister-id>.icp0.io/sitemap.xml`. Also update the 'Last Updated' date to match the new deployment date."
+          "description": "Enhance the unauthorized UI to display (a) whether isCallerAdmin is true/false and (b) the currently loaded userProfile.email (normalized display not required) or 'not set'; keep messaging in English and limit details to these two diagnostics. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Document how to re-attach the custom ICP0 domain alias `campus-point-services.icp0.io` to the newly deployed canister, including verification and troubleshooting.",
+      "summary": "Create a React Query mutation hook for saveCallerUserProfile and use it from the enquiries dashboard profile form, invalidating related queries on success.",
       "acceptanceCriteria": [
-        "Repository documentation clearly states that `campus-point-services.icp0.io` must be re-mapped to the new canister ID after redeploying.",
-        "Documentation includes steps to verify the domain resolves correctly (e.g., open the domain URL, confirm it is not an error page, compare to the new `https://[canister-id].icp0.io/` URL).",
-        "Documentation warns that the old domain may currently point to a deleted/non-existing canister and must be updated to the new canister ID to work again."
+        "A new mutation exists for saveCallerUserProfile and is used by the enquiries dashboard to persist name/email.",
+        "On success, relevant cached queries (currentUserProfile, isCallerAdmin, enquiries) are invalidated/refetched so the UI updates immediately."
       ],
       "file_operations": [
         {
-          "path": "frontend/DEPLOYED_PUBLIC_URL.md",
+          "path": "frontend/src/hooks/useUserProfile.ts",
           "operation": "modify",
-          "description": "Add a new section documenting that the custom ICP0 domain `https://campus-point-services.icp0.io/` is an alias that must be re-mapped to the new canister ID after each redeploy. Include a short verification checklist (compare the alias and the new `https://<new-canister-id>.icp0.io/` URL; check incognito; confirm not an error page) and troubleshooting notes for when the alias still resolves to a deleted/non-existing canister."
+          "description": "Add and export a React Query mutation hook (e.g., useSaveCallerUserProfile) that calls actor.saveCallerUserProfile(profile) and, on success, invalidates/refetches cached queries for currentUserProfile, isCallerAdmin, and enquiries so the admin dashboard updates immediately. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/sections/EnquiriesView.tsx",
+          "operation": "modify",
+          "description": "Use the new saveCallerUserProfile mutation hook from the 'Complete Profile' form; ensure submit disables while pending, shows errors via existing toast pattern, and triggers immediate UI refresh by relying on the mutation's query invalidation. Verify the component's usage instructions before implementing."
         }
       ]
     }

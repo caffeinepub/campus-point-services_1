@@ -2,29 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-perform-a-fresh-internet-computer-deployment-that-produces-a-new-working-public-url-in-the-format-https-canister-id-icp0-io-and-record-the-newly-generated-url-in-repo-as-the-latest-deployment-output",
-      "featureTitle": "Perform a fresh Internet Computer deployment that produces a new working public URL in the format `https://[canister-id].icp0.io/` and record the newly generated URL in-repo as the latest deployment output.",
+      "featureId": "feature-update-the-enquiries-dashboard-ui-to-handle-missing-incorrect-user-profile-email-if-the-caller-is-authenticated-but-their-user-profile-is-missing-or-has-an-empty-email-show-a-complete-profile-form-name-email-that-saves-via-savecalleruserprofile-then-re-check-authorization-and-load-enquiries-when-authorized",
+      "featureTitle": "Update the enquiries dashboard UI to handle missing/incorrect user profile email: if the caller is authenticated but their user profile is missing or has an empty email, show a \"Complete Profile\" form (name + email) that saves via saveCallerUserProfile, then re-check authorization and load enquiries when authorized.",
       "files": [
-        "frontend/DEPLOYMENT_OUTPUT.md"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-frontend-deployed-public-url-md-to-set-the-current-deployment-public-url-to-the-newly-generated-working-https-canister-id-icp0-io-url-and-keep-https-campus-point-services-icp0-io-listed-as-the-previous-deprecated-url",
-      "featureTitle": "Update `frontend/DEPLOYED_PUBLIC_URL.md` to set the **Current Deployment** public URL to the newly generated working `https://[canister-id].icp0.io/` URL and keep `https://campus-point-services.icp0.io/` listed as the previous/deprecated URL.",
-      "files": [
-        "frontend/DEPLOYED_PUBLIC_URL.md"
+        "frontend/src/components/sections/EnquiriesView.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -40,10 +21,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-frontend-google-indexing-guide-md-so-the-your-live-website-url-section-includes-the-newly-generated-working-https-canister-id-icp0-io-url-and-references-the-correct-sitemap-url-for-that-deployment",
-      "featureTitle": "Update `frontend/GOOGLE_INDEXING_GUIDE.md` so the 'Your Live Website URL' section includes the newly generated working `https://[canister-id].icp0.io/` URL and references the correct sitemap URL for that deployment.",
+      "featureId": "feature-improve-the-access-denied-state-on-the-enquiries-dashboard-to-clearly-indicate-why-access-was-denied-by-showing-a-whether-iscalleradmin-is-true-false-and-b-the-current-saved-profile-email-value-or-not-set-so-the-admin-can-self-diagnose-setup-issues",
+      "featureTitle": "Improve the \"Access Denied\" state on the enquiries dashboard to clearly indicate why access was denied by showing (a) whether isCallerAdmin is true/false and (b) the current saved profile email value (or \"not set\") so the admin can self-diagnose setup issues.",
       "files": [
-        "frontend/GOOGLE_INDEXING_GUIDE.md"
+        "frontend/src/components/sections/EnquiriesView.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -59,10 +40,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-documentation-for-re-attaching-the-custom-icp0-domain-campus-point-services-icp0-io-so-it-points-to-the-newly-deployed-canister-i-e-update-the-domain-mapping-alias-to-the-new-canister-id-including-a-short-verification-checklist-and-what-to-do-if-the-domain-still-resolves-to-a-deleted-non-existing-canister",
-      "featureTitle": "Add documentation for re-attaching the custom ICP0 domain `campus-point-services.icp0.io` so it points to the newly deployed canister (i.e., update the domain mapping/alias to the new canister ID), including a short verification checklist and what to do if the domain still resolves to a deleted/non-existing canister.",
+      "featureId": "feature-add-a-react-query-mutation-hook-to-save-the-caller-user-profile-calling-savecalleruserprofile-and-use-it-from-the-enquiries-dashboard-profile-form",
+      "featureTitle": "Add a React Query mutation hook to save the caller user profile (calling saveCallerUserProfile) and use it from the enquiries dashboard profile form.",
       "files": [
-        "frontend/DEPLOYED_PUBLIC_URL.md"
+        "frontend/src/components/sections/EnquiriesView.tsx",
+        "frontend/src/hooks/useUserProfile.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",

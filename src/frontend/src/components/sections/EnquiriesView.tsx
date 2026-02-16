@@ -2,16 +2,34 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Loader2, CheckCircle2, Mail, AlertCircle } from 'lucide-react';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
 import { useGetAllEnquiries, useMarkAnswered } from '@/hooks/useQueries';
 import { useIsCallerAdmin } from '@/hooks/useAdmin';
+import { useGetCallerUserProfile, useSaveCallerUserProfile } from '@/hooks/useUserProfile';
+import { isAuthorizedAdminEmail } from '@/constants/admin';
 import { toast } from 'sonner';
 
 export function EnquiriesView() {
   const { login, clear, loginStatus, identity } = useInternetIdentity();
   const { data: isAdmin, isLoading: isAdminLoading } = useIsCallerAdmin();
-  const { data: enquiries, isLoading: enquiriesLoading, error } = useGetAllEnquiries();
+  const { data: userProfile, isLoading: profileLoading, isFetched: profileFetched } = useGetCallerUserProfile();
+  const saveProfileMutation = useSaveCallerUserProfile();
+  
+  // Profile form state
+  const [profileName, setProfileName] = useState('');
+  const [profileEmail, setProfileEmail] = useState('');
+  
+  // Check if profile is missing or has empty/whitespace email
+  const needsProfileCompletion = !userProfile || !userProfile.email.trim();
+  
+  // Check if user is authorized (admin AND has the correct email)
+  const isAuthorized = isAdmin && userProfile && isAuthorizedAdminEmail(userProfile.email);
+  
+  // Only fetch enquiries if authorized
+  const { data: enquiries, isLoading: enquiriesLoading, error } = useGetAllEnquiries(!!isAuthorized);
   const markAnsweredMutation = useMarkAnswered();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -30,6 +48,26 @@ export function EnquiriesView() {
   const handleLogout = async () => {
     await clear();
     toast.success('Logged out successfully');
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!profileName.trim() || !profileEmail.trim()) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    try {
+      await saveProfileMutation.mutateAsync({
+        name: profileName.trim(),
+        email: profileEmail.trim(),
+      });
+      toast.success('Profile saved successfully');
+    } catch (error: any) {
+      console.error('Save profile error:', error);
+      toast.error('Failed to save profile. Please try again.');
+    }
   };
 
   const handleMarkAnswered = async (id: string) => {
@@ -79,8 +117,8 @@ export function EnquiriesView() {
     );
   }
 
-  // Loading admin status
-  if (isAdminLoading) {
+  // Loading admin status or profile
+  if (isAdminLoading || profileLoading) {
     return (
       <div className="min-h-[calc(100vh-20rem)] flex items-center justify-center py-20">
         <div className="text-center">
@@ -91,8 +129,82 @@ export function EnquiriesView() {
     );
   }
 
-  // Not admin
-  if (!isAdmin) {
+  // Show profile completion form if needed
+  if (isAuthenticated && profileFetched && needsProfileCompletion) {
+    return (
+      <div className="min-h-[calc(100vh-20rem)] flex items-center justify-center py-20 px-4">
+        <Card className="max-w-md w-full">
+          <CardHeader>
+            <CardTitle className="text-center">Complete Your Profile</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <p className="text-center text-muted-foreground mb-4">
+                Please complete your profile to access the enquiries dashboard.
+              </p>
+              
+              <div className="space-y-2">
+                <Label htmlFor="profile-name">Name</Label>
+                <Input
+                  id="profile-name"
+                  type="text"
+                  placeholder="Enter your name"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  disabled={saveProfileMutation.isPending}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="profile-email">Email</Label>
+                <Input
+                  id="profile-email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={profileEmail}
+                  onChange={(e) => setProfileEmail(e.target.value)}
+                  disabled={saveProfileMutation.isPending}
+                  required
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  type="submit"
+                  disabled={saveProfileMutation.isPending}
+                  className="flex-1"
+                >
+                  {saveProfileMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Profile'
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleLogout}
+                  variant="outline"
+                  disabled={saveProfileMutation.isPending}
+                >
+                  Logout
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Not authorized (either not admin OR wrong email) - show diagnostic info
+  if (!isAuthorized) {
+    const profileEmail = userProfile?.email || 'not set';
+    const adminStatus = isAdmin ? 'Admin' : 'Not Admin';
+    
     return (
       <div className="min-h-[calc(100vh-20rem)] flex items-center justify-center py-20 px-4">
         <Card className="max-w-md w-full">
@@ -104,8 +216,20 @@ export function EnquiriesView() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-center text-muted-foreground">
-              You do not have permission to view enquiries. Only administrators can access this page.
+              You do not have permission to view enquiries. Only authorized administrators can access this page.
             </p>
+            
+            <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Admin Status:</span>
+                <span className="font-medium">{adminStatus}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Profile Email:</span>
+                <span className="font-medium break-all">{profileEmail}</span>
+              </div>
+            </div>
+            
             <Button
               onClick={handleLogout}
               variant="outline"

@@ -1,9 +1,9 @@
 import Text "mo:core/Text";
-import Array "mo:core/Array";
 import Map "mo:core/Map";
 import Principal "mo:core/Principal";
-import Runtime "mo:core/Runtime";
 import Iter "mo:core/Iter";
+import Runtime "mo:core/Runtime";
+
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
@@ -17,6 +17,7 @@ actor {
 
   public type UserProfile = {
     name : Text;
+    email : Text;
   };
 
   public type EnquiryWithId = {
@@ -27,8 +28,28 @@ actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  let enquiries = Map.empty<Text, Enquiry>();
+  var maxEnquiryId : Nat = 0;
+  let enquiries = Map.empty<Nat, Enquiry>();
   let userProfiles = Map.empty<Principal, UserProfile>();
+
+  // Authorized admin email
+  let authorizedAdminEmail : Text = "Advnitin1404@gmail.com";
+
+  func normalizeEmail(email : Text) : Text {
+    email.trim(#text(" ")).toLower()
+  };
+
+  func isAuthorizedAdmin(caller : Principal) : Bool {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      return false;
+    };
+    switch (userProfiles.get(caller)) {
+      case (null) { false };
+      case (?profile) {
+        normalizeEmail(profile.email) == normalizeEmail(authorizedAdminEmail);
+      };
+    };
+  };
 
   // User profile management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -53,21 +74,21 @@ actor {
   };
 
   // Enquiry management
-  public shared ({ caller }) func createEnquiry(id : Text, name : Text, email : Text, message : Text) : async () {
-    // No authorization check - guests can submit enquiries
-    if (enquiries.containsKey(id)) { Runtime.trap("Enquiry already exists") };
+  public shared ({ caller }) func createEnquiry(name : Text, email : Text, message : Text) : async Nat {
     let enquiry : Enquiry = {
       name;
       email;
       message;
       answered = false;
     };
-    enquiries.add(id, enquiry);
+    maxEnquiryId += 1;
+    enquiries.add(maxEnquiryId, enquiry);
+    maxEnquiryId;
   };
 
-  public shared ({ caller }) func markAnswered(id : Text) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can perform this action");
+  public shared ({ caller }) func markAnswered(id : Nat) : async () {
+    if (not isAuthorizedAdmin(caller)) {
+      Runtime.trap("Unauthorized: Only the authorized admin can perform this action");
     };
     switch (enquiries.get(id)) {
       case (null) { Runtime.trap("Enquiry not found") };
@@ -79,12 +100,14 @@ actor {
   };
 
   public query ({ caller }) func getAllEnquiriesWithIds() : async [EnquiryWithId] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
-      Runtime.trap("Unauthorized: Only admins can view all enquiries");
+    if (not isAuthorizedAdmin(caller)) {
+      Runtime.trap("Unauthorized: Only the authorized admin can view all enquiries");
     };
     let iter = enquiries.entries();
     let enquiryWithIdIter = iter.map(
-      func((id, enquiry)) { { id; enquiry } }
+      func((id, enquiry)) {
+        { id = id.toText(); enquiry };
+      }
     );
     enquiryWithIdIter.toArray();
   };

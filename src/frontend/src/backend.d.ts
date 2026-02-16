@@ -19,6 +19,7 @@ export interface Enquiry {
 }
 export interface UserProfile {
     name: string;
+    email: string;
 }
 export enum UserRole {
     admin = "admin",
@@ -27,12 +28,12 @@ export enum UserRole {
 }
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    createEnquiry(id: string, name: string, email: string, message: string): Promise<void>;
+    createEnquiry(name: string, email: string, message: string): Promise<bigint>;
     getAllEnquiriesWithIds(): Promise<Array<EnquiryWithId>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
-    markAnswered(id: string): Promise<void>;
+    markAnswered(id: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
 }
