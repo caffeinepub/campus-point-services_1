@@ -2,29 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-enquiries-dashboard-ui-to-handle-missing-incorrect-user-profile-email-if-the-caller-is-authenticated-but-their-user-profile-is-missing-or-has-an-empty-email-show-a-complete-profile-form-name-email-that-saves-via-savecalleruserprofile-then-re-check-authorization-and-load-enquiries-when-authorized",
-      "featureTitle": "Update the enquiries dashboard UI to handle missing/incorrect user profile email: if the caller is authenticated but their user profile is missing or has an empty email, show a \"Complete Profile\" form (name + email) that saves via saveCallerUserProfile, then re-check authorization and load enquiries when authorized.",
+      "featureId": "feature-add-a-frontend-admin-management-section-on-the-enquiries-dashboard-that-allows-an-authorized-admin-to-add-and-remove-authorized-admin-emails",
+      "featureTitle": "Add a frontend admin management section on the Enquiries dashboard that allows an authorized admin to add and remove authorized admin emails.",
       "files": [
-        "frontend/src/components/sections/EnquiriesView.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-improve-the-access-denied-state-on-the-enquiries-dashboard-to-clearly-indicate-why-access-was-denied-by-showing-a-whether-iscalleradmin-is-true-false-and-b-the-current-saved-profile-email-value-or-not-set-so-the-admin-can-self-diagnose-setup-issues",
-      "featureTitle": "Improve the \"Access Denied\" state on the enquiries dashboard to clearly indicate why access was denied by showing (a) whether isCallerAdmin is true/false and (b) the current saved profile email value (or \"not set\") so the admin can self-diagnose setup issues.",
-      "files": [
-        "frontend/src/components/sections/EnquiriesView.tsx"
+        "frontend/src/components/sections/EnquiriesView.tsx",
+        "frontend/src/hooks/useEnquiryAdminEmails.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -40,11 +22,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-react-query-mutation-hook-to-save-the-caller-user-profile-calling-savecalleruserprofile-and-use-it-from-the-enquiries-dashboard-profile-form",
-      "featureTitle": "Add a React Query mutation hook to save the caller user profile (calling saveCallerUserProfile) and use it from the enquiries dashboard profile form.",
+      "featureId": "feature-update-the-frontend-authorization-diagnostic-logic-so-it-does-not-rely-on-a-hardcoded-admin-email-list-it-should-instead-use-the-backend-managed-email-list-for-any-email-authorized-diagnostics-shown-in-the-access-denied-view",
+      "featureTitle": "Update the frontend authorization/diagnostic logic so it does not rely on a hardcoded admin email list; it should instead use the backend-managed email list for any “Email Authorized” diagnostics shown in the Access Denied view.",
       "files": [
         "frontend/src/components/sections/EnquiriesView.tsx",
-        "frontend/src/hooks/useUserProfile.ts"
+        "frontend/src/constants/admin.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -56,6 +38,25 @@
       ],
       "testIds": [
         "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-clear-user-facing-guidance-on-the-enquiries-login-access-screen-describing-what-is-required-for-a-new-admin-to-gain-access-the-new-admin-must-log-in-with-internet-identity-and-set-their-profile-email-to-the-authorized-email-that-the-owner-admin-has-added",
+      "featureTitle": "Add clear user-facing guidance on the Enquiries login/access screen describing what is required for a new admin to gain access: the new admin must log in with Internet Identity and set their profile email to the authorized email that the owner/admin has added.",
+      "files": [
+        "frontend/src/components/sections/EnquiriesView.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
       ],
       "confidence": "high"
     }

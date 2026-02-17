@@ -1,89 +1,109 @@
 {
   "kind": "build_request",
-  "title": "Fix admin enquiry page access denied for Advnitin1404@gmail.com",
+  "title": "Allow adding an additional admin for the owner-only Enquiries page",
   "projectName": "Campus Point Services",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix admin authorization so the enquiries dashboard is accessible to the user with email Advnitin1404@gmail.com by making the backend authorized-admin email comparison case-insensitive and whitespace-tolerant (trim + lowercase on both stored profile email and authorized email).",
+      "text": "Add backend support to manage multiple enquiry admins by storing an editable, persistent list of authorized admin emails (instead of a hardcoded constant list) and using it for enquiry authorization checks.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "user-last"
         ],
         "quotes": [
-          "Why Advnitin1404@gmail.com this mail is not able to access the enquiry page",
-          "Showing this issue"
+          "Ya I want to add one more admin.\nWhat it will require to add one more admin?"
         ]
       },
       "acceptanceCriteria": [
-        "When the caller is an admin and their saved profile email is any case/whitespace variant of \"Advnitin1404@gmail.com\" (e.g., \"advnitin1404@gmail.com\", \" Advnitin1404@gmail.com \"), backend methods getAllEnquiriesWithIds and markAnswered do not trap with Unauthorized.",
-        "The backend continues to deny access to non-admin callers and to admin callers whose saved profile email does not match the authorized email after normalization."
+        "Authorized admin emails are stored in a persistent (upgrade-safe) state variable initialized with the current default emails.",
+        "Backend enquiry authorization checks (view enquiries / mark answered / isAdminEnquiryAccess) use the persistent authorized email list.",
+        "If an unauthorized caller attempts to modify the authorized email list, the backend rejects the request with an appropriate trap message."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the enquiries dashboard UI to handle missing/incorrect user profile email: if the caller is authenticated but their user profile is missing or has an empty email, show a \"Complete Profile\" form (name + email) that saves via saveCallerUserProfile, then re-check authorization and load enquiries when authorized.",
-      "target": "frontend",
+      "text": "Expose backend admin-management APIs for enquiries access: list authorized admin emails, add an authorized admin email, and remove an authorized admin email.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "user-last"
         ],
         "quotes": [
-          "Showing this issue"
+          "Ya I want to add one more admin.\nWhat it will require to add one more admin?"
         ]
       },
       "acceptanceCriteria": [
-        "If the user is logged in and getCallerUserProfile returns null or an email that is empty/whitespace, the page shows a profile form instead of the generic \"Access Denied\" message.",
-        "Submitting the profile form persists the profile via the backend and triggers a refresh of admin/profile/enquiries queries.",
-        "After saving a profile email matching Advnitin1404@gmail.com (case-insensitive), the enquiries list loads without requiring a hard refresh."
+        "A query method returns the current authorized admin email list.",
+        "A shared method allows an authorized admin to add a new email; emails are normalized for case-insensitive comparison and duplicates are prevented.",
+        "A shared method allows an authorized admin to remove an email; removal is case-insensitive and the resulting list is persisted.",
+        "All methods validate that the provided email is non-empty after trimming; invalid inputs are rejected."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Improve the \"Access Denied\" state on the enquiries dashboard to clearly indicate why access was denied by showing (a) whether isCallerAdmin is true/false and (b) the current saved profile email value (or \"not set\") so the admin can self-diagnose setup issues.",
+      "text": "Add a frontend admin management section on the Enquiries dashboard that allows an authorized admin to add and remove authorized admin emails.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "user-last"
         ],
         "quotes": [
-          "Showing this issue"
+          "Ya I want to add one more admin.\nWhat it will require to add one more admin?"
         ]
       },
       "acceptanceCriteria": [
-        "When access is denied, the UI displays the admin-check result (admin vs not admin) and the currently loaded profile email value (or 'not set').",
-        "All user-facing text is in English and does not expose sensitive implementation details beyond the above status."
+        "When the current user is authorized for enquiries, the Enquiries dashboard displays an “Admin Access” (or similar) panel showing the current authorized admin email list.",
+        "The panel provides an input + button to add a new admin email and shows success/error toasts based on the result.",
+        "Each listed email has a remove action (with a simple confirmation) that removes it and refreshes the list.",
+        "The UI disables actions while requests are in-flight and handles backend errors gracefully."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Add a React Query mutation hook to save the caller user profile (calling saveCallerUserProfile) and use it from the enquiries dashboard profile form.",
+      "text": "Update the frontend authorization/diagnostic logic so it does not rely on a hardcoded admin email list; it should instead use the backend-managed email list for any “Email Authorized” diagnostics shown in the Access Denied view.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "user-last"
         ],
         "quotes": [
-          "Showing this issue"
+          "Ya I want to add one more admin.\nWhat it will require to add one more admin?"
         ]
       },
       "acceptanceCriteria": [
-        "A new mutation exists for saveCallerUserProfile and is used by the enquiries dashboard to persist name/email.",
-        "On success, relevant cached queries (currentUserProfile, isCallerAdmin, enquiries) are invalidated/refetched so the UI updates immediately."
+        "The app no longer needs to keep the backend and frontend admin email lists manually in sync for authorization diagnostics.",
+        "In the Access Denied screen, the “Email Authorized: Yes/No” determination is based on the backend-managed list (fetched from the backend), not a local constant."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Add clear user-facing guidance on the Enquiries login/access screen describing what is required for a new admin to gain access: the new admin must log in with Internet Identity and set their profile email to the authorized email that the owner/admin has added.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "user-last"
+        ],
+        "quotes": [
+          "What it will require to add one more admin?"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Enquiries view includes a short explanation (English) stating that access is granted by authorizing an email and that the admin must log in with Internet Identity and save a matching profile email.",
+        "Copy is concise and appears near the login/profile completion flow where users are most likely to need it."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (read-only components must be composed, not modified).",
-    "Do not edit frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
-    "Keep all Motoko logic in the single backend actor (backend/main.mo)."
+    "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
+    "Do not edit frontend files under immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "Use Internet Identity only (no passwords/passkeys implemented separately)."
   ],
   "nonGoals": [
-    "Adding any third-party authentication provider (only Internet Identity is used).",
-    "Adding real-time updates/chat/notifications.",
-    "Changing the public website content/sections unrelated to the enquiries/admin access flow."
+    "Implementing third-party authentication providers (Google/Facebook/GitHub/Auth0).",
+    "Creating role-based permissions beyond enquiry-admin email authorization (e.g., per-action roles).",
+    "Adding real-time updates or notifications for new enquiries."
   ],
   "imageRequirements": {
     "required": [],

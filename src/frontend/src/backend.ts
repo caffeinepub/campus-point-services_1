@@ -110,14 +110,19 @@ export enum UserRole {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    addAdminEmail(email: string): Promise<boolean>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createEnquiry(name: string, email: string, message: string): Promise<bigint>;
     getAllEnquiriesWithIds(): Promise<Array<EnquiryWithId>>;
+    getAuthorizedAdminEmails(): Promise<Array<string>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    initializeAuthorizedEmails(): Promise<void>;
+    isAdminEnquiryAccess(_caller: Principal): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     markAnswered(id: bigint): Promise<void>;
+    removeAdminEmail(email: string): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
 }
 import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
@@ -134,6 +139,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor._initializeAccessControlWithSecret(arg0);
+            return result;
+        }
+    }
+    async addAdminEmail(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addAdminEmail(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addAdminEmail(arg0);
             return result;
         }
     }
@@ -179,6 +198,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getAuthorizedAdminEmails(): Promise<Array<string>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAuthorizedAdminEmails();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAuthorizedAdminEmails();
+            return result;
+        }
+    }
     async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
@@ -221,6 +254,34 @@ export class Backend implements backendInterface {
             return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
         }
     }
+    async initializeAuthorizedEmails(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.initializeAuthorizedEmails();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.initializeAuthorizedEmails();
+            return result;
+        }
+    }
+    async isAdminEnquiryAccess(arg0: Principal): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isAdminEnquiryAccess(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.isAdminEnquiryAccess(arg0);
+            return result;
+        }
+    }
     async isCallerAdmin(): Promise<boolean> {
         if (this.processError) {
             try {
@@ -246,6 +307,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.markAnswered(arg0);
+            return result;
+        }
+    }
+    async removeAdminEmail(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.removeAdminEmail(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.removeAdminEmail(arg0);
             return result;
         }
     }

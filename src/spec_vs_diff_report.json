@@ -1,24 +1,76 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T17:50:12.659Z",
-  "summary": "REQ-1 appears implemented in backend via trim+lowercase normalization for both stored profile email and the authorized admin email. REQ-4 appears implemented via a new React Query mutation hook for saveCallerUserProfile with cache invalidation. Based on the EnquiriesView changes and the provided file summary text, REQ-2 and REQ-3 also appear implemented, but the EnquiriesView diff is truncated so some UI acceptance criteria cannot be fully verified from direct code evidence.",
-  "missing_requirements": [],
-  "hallucinated_features": [
+  "generatedAt": "2026-02-17T15:07:44.331Z",
+  "summary": "The diff adds frontend hooks/UI for managing enquiry admin emails, but the backend does not implement a persistent, editable authorized-email list nor correct list/add/remove behavior. Several unrelated marketing/SEO/layout changes were also introduced that are not part of the BuildRequest.",
+  "missing_requirements": [
     {
-      "description": "Backend now enforces additional access-control checks for profile operations (e.g., getCallerUserProfile/saveCallerUserProfile require #user permission; getUserProfile restricts to self or admin), which were not requested by the BuildRequest.",
-      "reason": "The BuildRequest focuses on admin email normalization and frontend UI behavior for missing profile email; it does not request changing authorization rules for profile APIs beyond saving a profile from the frontend.",
+      "id": "REQ-1",
+      "requirement": "Add backend support to manage multiple enquiry admins by storing an editable, persistent list of authorized admin emails (upgrade-safe) initialized with current default emails, and use it for enquiry authorization checks (view enquiries / mark answered / isAdminEnquiryAccess).",
+      "reason": "No persistent state variable for authorized admin emails is shown; authorization checks appear to consult an empty Set every time. The added migration removes/does not carry forward an authorizedAdminEmails field. getAuthorizedAdminEmails returns an empty list, and isAuthorizedEmail checks membership in Set.empty, so authorization can never succeed based on email list.",
       "evidence": [
-        "backend/main.mo"
+        "backend/main.mo (isAuthorizedEmail uses Set.empty<Text>(); getAuthorizedAdminEmails returns []; no stable/persistent email list shown)",
+        "backend/migration.mo (OldActor has authorizedAdminEmails but NewActor drops it; run() does not preserve it)"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Expose backend APIs to list/add/remove authorized admin emails with trimming, case-insensitive normalization, duplicate prevention, persisted results, and traps for unauthorized callers.",
+      "reason": "The backend methods exist by name, but they do not manage a stored list: getAuthorizedAdminEmails always returns [], addAdminEmail/removeAdminEmail do not add/remove from any list, and input validation for non-empty-after-trim is not shown. Case-insensitive removal/persistence cannot be met without stored state.",
+      "evidence": [
+        "backend/main.mo (getAuthorizedAdminEmails returns []; addAdminEmail/removeAdminEmail only call AccessControl.assignRole and do not update any email list; no non-empty input validation shown)"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Update frontend authorization/diagnostic logic so it does not rely on a hardcoded admin email list; Access Denied 'Email Authorized: Yes/No' diagnostics must be based on backend-managed list.",
+      "reason": "The hardcoded AUTHORIZED_ADMIN_EMAILS constant remains in the codebase; the diff does not provide evidence that the Access Denied diagnostics were updated to fetch and use the backend-managed list (relevant UI not shown in the truncated diff).",
+      "evidence": [
+        "frontend/src/constants/admin.ts (AUTHORIZED_ADMIN_EMAILS constant still present)",
+        "frontend/src/components/sections/EnquiriesView.tsx (truncated; no visible Access Denied diagnostics section to confirm change)"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Add concise user-facing guidance on the Enquiries login/access screen explaining that a new admin must log in with Internet Identity and set profile email to an authorized email added by owner/admin.",
+      "reason": "A file summary claims this guidance exists, but the provided EnquiriesView diff snippet is truncated before any explicit guidance copy is shown; cannot confirm from evidence in the visible diff content.",
+      "evidence": [
+        "frontend/src/components/sections/EnquiriesView.tsx (truncated; guidance text not visible)"
       ]
     }
   ],
-  "confidence": 0.72,
+  "hallucinated_features": [
+    {
+      "description": "Introduced a backend migration module and changed actor to use a migration function, including dropping the old authorizedAdminEmails field.",
+      "reason": "BuildRequest constraints require a single Motoko actor in backend/main.mo and do not request adding a migration module; additionally, dropping authorizedAdminEmails conflicts with the need for persistent email storage.",
+      "evidence": [
+        "backend/migration.mo (new file)",
+        "backend/main.mo (\"with migration = Migration.run\")"
+      ]
+    },
+    {
+      "description": "Added initializeAuthorizedEmails() system-admin initialization flow and used AccessControl roles assignment instead of managing an email list.",
+      "reason": "BuildRequest asks for a persistent, editable list of authorized admin emails and corresponding list/add/remove APIs; it does not request a one-time initialization endpoint or role assignment loops unrelated to storing emails.",
+      "evidence": [
+        "backend/main.mo (initializeAuthorizedEmails; assigns #admin role in a loop over emails but does not store emails)"
+      ]
+    },
+    {
+      "description": "Unrelated frontend marketing/SEO/layout changes (OG URL metadata update, header/footer edits, hero/about/services/process/testimonials/faq copy changes, theme changes, robots.txt, etc.).",
+      "reason": "Not requested by any REQ; scope is specifically enquiries admin management and related access diagnostics/guidance.",
+      "evidence": [
+        "frontend-file-summaries.txt (multiple unrelated sections and SEO/theme updates described)"
+      ]
+    }
+  ],
+  "confidence": 0.74,
   "changed_files": [
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
     "frontend/src/components/sections/EnquiriesView.tsx",
-    "frontend/src/hooks/useUserProfile.ts",
+    "frontend/src/constants/admin.ts",
+    "frontend/src/hooks/useEnquiryAdminEmails.ts",
     "project_state.json"
   ]
 }

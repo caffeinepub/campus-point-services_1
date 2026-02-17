@@ -1,36 +1,34 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Website includes an owner-only enquiries viewing page protected by Internet Identity; user wants to add an additional admin with access.",
   "architectural_notes": [
-    "Enquiry page access is restricted via email-based authorization (allowlist of permitted email addresses)."
+    "Owner-only enquiries page is protected via Internet Identity (no manual passkey/password)."
   ],
-  "known_issues": [
-    "Advnitin1404@gmail.com is still unable to access the enquiry page (user reports issue persists)."
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-update-the-enquiries-dashboard-ui-to-handle-missing-incorrect-user-profile-email-if-the-caller-is-authenticated-but-their-user-profile-is-missing-or-has-an-empty-email-show-a-complete-profile-form-name-email-that-saves-via-savecalleruserprofile-then-re-check-authorization-and-load-enquiries-when-authorized",
-      "title": "Update the enquiries dashboard UI to handle missing/incorrect user profile email: if the caller is authenticated but their user profile is missing or has an empty email, show a \"Complete Profile\" form (name + email) that saves via saveCallerUserProfile, then re-check authorization and load enquiries when authorized.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-improve-the-access-denied-state-on-the-enquiries-dashboard-to-clearly-indicate-why-access-was-denied-by-showing-a-whether-iscalleradmin-is-true-false-and-b-the-current-saved-profile-email-value-or-not-set-so-the-admin-can-self-diagnose-setup-issues",
-      "title": "Improve the \"Access Denied\" state on the enquiries dashboard to clearly indicate why access was denied by showing (a) whether isCallerAdmin is true/false and (b) the current saved profile email value (or \"not set\") so the admin can self-diagnose setup issues.",
+      "id": "feature-add-a-frontend-admin-management-section-on-the-enquiries-dashboard-that-allows-an-authorized-admin-to-add-and-remove-authorized-admin-emails",
+      "title": "Add a frontend admin management section on the Enquiries dashboard that allows an authorized admin to add and remove authorized admin emails.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-react-query-mutation-hook-to-save-the-caller-user-profile-calling-savecalleruserprofile-and-use-it-from-the-enquiries-dashboard-profile-form",
-      "title": "Add a React Query mutation hook to save the caller user profile (calling saveCallerUserProfile) and use it from the enquiries dashboard profile form.",
+      "id": "feature-update-the-frontend-authorization-diagnostic-logic-so-it-does-not-rely-on-a-hardcoded-admin-email-list-it-should-instead-use-the-backend-managed-email-list-for-any-email-authorized-diagnostics-shown-in-the-access-denied-view",
+      "title": "Update the frontend authorization/diagnostic logic so it does not rely on a hardcoded admin email list; it should instead use the backend-managed email list for any “Email Authorized” diagnostics shown in the Access Denied view.",
       "reqIds": [
         "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-clear-user-facing-guidance-on-the-enquiries-login-access-screen-describing-what-is-required-for-a-new-admin-to-gain-access-the-new-admin-must-log-in-with-internet-identity-and-set-their-profile-email-to-the-authorized-email-that-the-owner-admin-has-added",
+      "title": "Add clear user-facing guidance on the Enquiries login/access screen describing what is required for a new admin to gain access: the new admin must log in with Internet Identity and set their profile email to the authorized email that the owner/admin has added.",
+      "reqIds": [
+        "REQ-5"
       ],
       "version": 1
     }
@@ -38,9 +36,23 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Fix admin authorization so the enquiries dashboard is accessible to the user with email Advnitin1404@gmail.com by making the backend authorized-admin email comparison case-insensitive and whitespace-tolerant (trim + lowercase on both stored profile email and authorized email).",
+      "summary": "Add support for an additional admin account to access the owner-only enquiries page (Internet Identity-based access control).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add backend support to manage multiple enquiry admins by storing an editable, persistent list of authorized admin emails (instead of a hardcoded constant list) and using it for enquiry authorization checks.",
       "reqIds": [
         "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Expose backend admin-management APIs for enquiries access: list authorized admin emails, add an authorized admin email, and remove an authorized admin email.",
+      "reqIds": [
+        "REQ-2"
       ],
       "status": "pending"
     }

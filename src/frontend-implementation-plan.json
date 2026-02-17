@@ -1,56 +1,62 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Enquiries dashboard: profile completion + clearer access denied + save profile mutation",
+  "title": "Enquiries: manage authorized admin emails from the dashboard",
   "requirements": [
     {
-      "id": "REQ-2",
-      "summary": "Show a Complete Profile form on the enquiries dashboard when the authenticated caller has no profile or an empty/whitespace email, then save and refresh authorization/enquiries.",
-      "acceptanceCriteria": [
-        "If the user is logged in and getCallerUserProfile returns null or an email that is empty/whitespace, the page shows a profile form instead of the generic \"Access Denied\" message.",
-        "Submitting the profile form persists the profile via the backend and triggers a refresh of admin/profile/enquiries queries.",
-        "After saving a profile email matching Advnitin1404@gmail.com (case-insensitive), the enquiries list loads without requiring a hard refresh."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/sections/EnquiriesView.tsx",
-          "operation": "modify",
-          "description": "Add a 'Complete Profile' UI state that appears when the caller is authenticated but userProfile is null or userProfile.email is empty/whitespace; use shadcn-ui (e.g., Card/Button/Input/Label) components to compose the form without modifying any files under frontend/src/components/ui. Wire the form submit to the saveCallerUserProfile mutation (REQ-4) and, on success, re-check admin status/profile and load enquiries automatically. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
       "id": "REQ-3",
-      "summary": "Make the enquiries dashboard Access Denied state self-diagnostic by showing isCallerAdmin result and the saved profile email (or not set).",
+      "summary": "Add an Enquiries dashboard “Admin Access” panel to list, add, and remove authorized admin emails (authorized users only).",
       "acceptanceCriteria": [
-        "When access is denied, the UI displays the admin-check result (admin vs not admin) and the currently loaded profile email value (or 'not set').",
-        "All user-facing text is in English and does not expose sensitive implementation details beyond the above status."
+        "When the current user is authorized for enquiries, the Enquiries dashboard displays an “Admin Access” (or similar) panel showing the current authorized admin email list.",
+        "The panel provides an input + button to add a new admin email and shows success/error toasts based on the result.",
+        "Each listed email has a remove action (with a simple confirmation) that removes it and refreshes the list.",
+        "The UI disables actions while requests are in-flight and handles backend errors gracefully."
       ],
       "file_operations": [
         {
+          "path": "frontend/src/hooks/useEnquiryAdminEmails.ts",
+          "operation": "create",
+          "description": "Create React Query hooks for enquiry-admin email management using backend capabilities: fetch authorized admin email list, add email, remove email; include loading states, error propagation, and query invalidation after mutations. Verify the component's usage instructions before implementing."
+        },
+        {
           "path": "frontend/src/components/sections/EnquiriesView.tsx",
           "operation": "modify",
-          "description": "Enhance the unauthorized UI to display (a) whether isCallerAdmin is true/false and (b) the currently loaded userProfile.email (normalized display not required) or 'not set'; keep messaging in English and limit details to these two diagnostics. Verify the component's usage instructions before implementing."
+          "description": "When enquiries access is authorized, add an “Admin Access” panel near the top of the dashboard that: (1) shows the fetched authorized email list, (2) includes an input + add button, (3) renders per-email remove actions with a confirmation, (4) disables controls while requests are in-flight, and (5) uses toast notifications for success/error. Use shadcn-ui components (Card, Button, Input, Badge/Label as appropriate) for consistent UI. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Create a React Query mutation hook for saveCallerUserProfile and use it from the enquiries dashboard profile form, invalidating related queries on success.",
+      "summary": "Remove frontend hardcoded admin email list usage for Access Denied diagnostics; base “Email Authorized” on backend-managed list.",
       "acceptanceCriteria": [
-        "A new mutation exists for saveCallerUserProfile and is used by the enquiries dashboard to persist name/email.",
-        "On success, relevant cached queries (currentUserProfile, isCallerAdmin, enquiries) are invalidated/refetched so the UI updates immediately."
+        "The app no longer needs to keep the backend and frontend admin email lists manually in sync for authorization diagnostics.",
+        "In the Access Denied screen, the “Email Authorized: Yes/No” determination is based on the backend-managed list (fetched from the backend), not a local constant."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useUserProfile.ts",
+          "path": "frontend/src/constants/admin.ts",
           "operation": "modify",
-          "description": "Add and export a React Query mutation hook (e.g., useSaveCallerUserProfile) that calls actor.saveCallerUserProfile(profile) and, on success, invalidates/refetches cached queries for currentUserProfile, isCallerAdmin, and enquiries so the admin dashboard updates immediately. Verify the component's usage instructions before implementing."
+          "description": "Deprecate/remove reliance on the hardcoded AUTHORIZED_ADMIN_EMAILS list for authorization diagnostics (keep only non-authoritative utilities if still needed). Ensure no UI diagnostics depend on this list anymore."
         },
         {
           "path": "frontend/src/components/sections/EnquiriesView.tsx",
           "operation": "modify",
-          "description": "Use the new saveCallerUserProfile mutation hook from the 'Complete Profile' form; ensure submit disables while pending, shows errors via existing toast pattern, and triggers immediate UI refresh by relying on the mutation's query invalidation. Verify the component's usage instructions before implementing."
+          "description": "Update the Access Denied diagnostic block to compute “Email Authorized: Yes/No” by comparing the caller profile email against the backend-fetched authorized email list (case-insensitive). Show a sensible loading state while the list is being fetched and handle backend errors gracefully without crashing. Use shadcn-ui components already present in the view. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Add concise guidance on the Enquiries access flow explaining how a new admin gains access (II login + matching authorized profile email).",
+      "acceptanceCriteria": [
+        "The Enquiries view includes a short explanation (English) stating that access is granted by authorizing an email and that the admin must log in with Internet Identity and save a matching profile email.",
+        "Copy is concise and appears near the login/profile completion flow where users are most likely to need it."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/sections/EnquiriesView.tsx",
+          "operation": "modify",
+          "description": "Add concise, user-facing guidance text near: (1) the “Login Required” card and (2) the profile completion/edit profile forms, explaining that an owner/authorized admin must add the email to the authorized list, then the new admin must log in with Internet Identity and save the same email in their profile to gain access. Use existing typography styles/components for consistency (shadcn-ui Card content text). Verify the component's usage instructions before implementing."
         }
       ]
     }

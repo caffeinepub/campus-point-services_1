@@ -30,9 +30,11 @@ export const UserProfile = IDL.Record({
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addAdminEmail' : IDL.Func([IDL.Text], [IDL.Bool], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'createEnquiry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
   'getAllEnquiriesWithIds' : IDL.Func([], [IDL.Vec(EnquiryWithId)], ['query']),
+  'getAuthorizedAdminEmails' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getUserProfile' : IDL.Func(
@@ -40,8 +42,11 @@ export const idlService = IDL.Service({
       [IDL.Opt(UserProfile)],
       ['query'],
     ),
+  'initializeAuthorizedEmails' : IDL.Func([], [], []),
+  'isAdminEnquiryAccess' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'markAnswered' : IDL.Func([IDL.Nat], [], []),
+  'removeAdminEmail' : IDL.Func([IDL.Text], [IDL.Bool], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
 });
 
@@ -64,6 +69,7 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addAdminEmail' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'createEnquiry' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
     'getAllEnquiriesWithIds' : IDL.Func(
@@ -71,6 +77,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(EnquiryWithId)],
         ['query'],
       ),
+    'getAuthorizedAdminEmails' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getUserProfile' : IDL.Func(
@@ -78,8 +85,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(UserProfile)],
         ['query'],
       ),
+    'initializeAuthorizedEmails' : IDL.Func([], [], []),
+    'isAdminEnquiryAccess' : IDL.Func([IDL.Principal], [IDL.Bool], ['query']),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'markAnswered' : IDL.Func([IDL.Nat], [], []),
+    'removeAdminEmail' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   });
 };

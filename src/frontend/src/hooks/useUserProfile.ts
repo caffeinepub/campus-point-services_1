@@ -44,6 +44,7 @@ export function useSaveCallerUserProfile() {
       // Invalidate and refetch all related queries
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
       queryClient.invalidateQueries({ queryKey: ['isCallerAdmin'] });
+      queryClient.invalidateQueries({ queryKey: ['isCallerAuthorizedForEnquiries'] });
       queryClient.invalidateQueries({ queryKey: ['enquiries'] });
     },
   });

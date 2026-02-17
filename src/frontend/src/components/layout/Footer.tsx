@@ -1,6 +1,7 @@
 import { Separator } from '@/components/ui/separator';
-import { Heart, Phone, Mail } from 'lucide-react';
+import { Heart, Phone, Mail, ExternalLink, Copy } from 'lucide-react';
 import { CONTACT_PHONE, CONTACT_EMAIL } from '@/constants/contact';
+import { toast } from 'sonner';
 
 interface FooterProps {
   currentView: 'home' | 'enquiries';
@@ -12,6 +13,9 @@ export function Footer({ currentView, onNavigate }: FooterProps) {
   const appIdentifier = encodeURIComponent(
     typeof window !== 'undefined' ? window.location.hostname : 'campus-point-services'
   );
+
+  const websiteUrl = 'campus-point-services.icp0.io';
+  const websiteFullUrl = `https://${websiteUrl}`;
 
   const scrollToSection = (id: string) => {
     if (currentView !== 'home') {
@@ -28,6 +32,11 @@ export function Footer({ currentView, onNavigate }: FooterProps) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
+  };
+
+  const copyWebsiteUrl = () => {
+    navigator.clipboard.writeText(websiteFullUrl);
+    toast.success('Website URL copied to clipboard!');
   };
 
   return (
@@ -59,6 +68,24 @@ export function Footer({ currentView, onNavigate }: FooterProps) {
                 <Mail className="h-4 w-4" />
                 <span>{CONTACT_EMAIL.display}</span>
               </a>
+              <div className="flex items-center gap-2 text-muted-foreground group">
+                <ExternalLink className="h-4 w-4" />
+                <a
+                  href={websiteFullUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors select-all"
+                >
+                  {websiteUrl}
+                </a>
+                <button
+                  onClick={copyWebsiteUrl}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
+                  title="Copy URL"
+                >
+                  <Copy className="h-3 w-3" />
+                </button>
+              </div>
             </div>
           </div>
 

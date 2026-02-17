@@ -23,14 +23,19 @@ export type UserRole = { 'admin' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addAdminEmail' : ActorMethod<[string], boolean>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'createEnquiry' : ActorMethod<[string, string, string], bigint>,
   'getAllEnquiriesWithIds' : ActorMethod<[], Array<EnquiryWithId>>,
+  'getAuthorizedAdminEmails' : ActorMethod<[], Array<string>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'initializeAuthorizedEmails' : ActorMethod<[], undefined>,
+  'isAdminEnquiryAccess' : ActorMethod<[Principal], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'markAnswered' : ActorMethod<[bigint], undefined>,
+  'removeAdminEmail' : ActorMethod<[string], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

@@ -27,13 +27,18 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    addAdminEmail(email: string): Promise<boolean>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createEnquiry(name: string, email: string, message: string): Promise<bigint>;
     getAllEnquiriesWithIds(): Promise<Array<EnquiryWithId>>;
+    getAuthorizedAdminEmails(): Promise<Array<string>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    initializeAuthorizedEmails(): Promise<void>;
+    isAdminEnquiryAccess(_caller: Principal): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     markAnswered(id: bigint): Promise<void>;
+    removeAdminEmail(email: string): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
 }

@@ -1,12 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Restore admin access to the enquiries dashboard for the authorized admin email (Advnitin1404@gmail.com) and make the UI self-diagnose common profile/authorization issues.
+**Goal:** Allow the owner/enquiries admins to add/remove additional admins for the Enquiries page using a backend-managed, persistent email allowlist (no hardcoded lists).
 
 **Planned changes:**
-- Backend: Make authorized-admin email comparison case-insensitive and whitespace-tolerant by trimming + lowercasing both the stored profile email and the authorized email before comparison, so admin methods don’t incorrectly return Unauthorized.
-- Frontend: On the enquiries dashboard, if the caller is authenticated but their user profile is missing or has an empty/whitespace email, show a “Complete Profile” form (name + email) that saves via `saveCallerUserProfile`, then re-checks authorization and loads enquiries when permitted.
-- Frontend: Improve the “Access Denied” state to show whether `isCallerAdmin` is true/false and show the current saved profile email value (or “not set”), in English.
-- Frontend: Add a React Query mutation hook for `saveCallerUserProfile` and use it from the enquiries dashboard profile form; on success, invalidate/refetch relevant queries (profile, admin check, enquiries) so the page updates without a hard refresh.
+- Backend: Store an editable, persistent (upgrade-safe) list of authorized enquiry-admin emails initialized with the current default emails, and use it for all enquiries authorization checks.
+- Backend: Add admin-management APIs to list/add/remove authorized admin emails with validation (non-empty), case-insensitive normalization, and duplicate prevention; reject unauthorized attempts with an appropriate trap.
+- Frontend: Add an “Admin Access” panel on the Enquiries dashboard for authorized users to view the current admin email list, add a new email, and remove an email (with confirmation), including loading/disabled states and success/error toasts.
+- Frontend: Update any “Access Denied” diagnostics (e.g., “Email Authorized: Yes/No”) to use the backend-managed admin list rather than a frontend hardcoded list.
+- Frontend: Add concise guidance on the Enquiries login/access area explaining that a new admin must (1) be added to the authorized email list and (2) log in with Internet Identity and set their profile email to match the authorized email.
 
-**User-visible outcome:** The authorized admin can access and manage enquiries even if their saved email differs by case/whitespace, and users who see “Access Denied” can understand whether it’s due to admin status or a missing/incorrect profile email and fix it directly from the page.
+**User-visible outcome:** An existing enquiries admin can manage who has access by adding/removing admin emails directly in the Enquiries dashboard, and users see clear instructions on how a newly added admin can gain access.

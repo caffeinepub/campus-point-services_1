@@ -10,27 +10,26 @@ export function useIsCallerAdmin() {
     queryKey: ['isCallerAdmin', identity?.getPrincipal().toString()],
     queryFn: async () => {
       if (!actor) return false;
-      try {
-        return await actor.isCallerAdmin();
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        return false;
-      }
+      return actor.isCallerAdmin();
     },
     enabled: !!actor && !!identity && !isFetching,
     retry: false,
   });
 }
 
-export function useGetCallerUserRole() {
+/**
+ * Hook to check if the current caller is authorized to access enquiries
+ * Uses backend authorization logic (AccessControl admin OR authorized email)
+ */
+export function useIsCallerAuthorizedForEnquiries() {
   const { actor, isFetching } = useActor();
   const { identity } = useInternetIdentity();
 
-  return useQuery({
-    queryKey: ['callerUserRole', identity?.getPrincipal().toString()],
+  return useQuery<boolean>({
+    queryKey: ['isCallerAuthorizedForEnquiries', identity?.getPrincipal().toString()],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.getCallerUserRole();
+      if (!actor || !identity) return false;
+      return actor.isAdminEnquiryAccess(identity.getPrincipal());
     },
     enabled: !!actor && !!identity && !isFetching,
     retry: false,
